@@ -1,7 +1,7 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 interface DatabaseConfig {
-  database: TypeOrmModuleOptions;
+  database: DataSourceOptions;
 }
 
 export default (): DatabaseConfig => ({

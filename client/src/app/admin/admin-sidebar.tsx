@@ -11,10 +11,11 @@ import {
 import Link from "next/link";
 
 const adminMenuItems = [
-  {
-    label: "My Account",
-    href: "/admin/my-account",
-  },
+  // TODO: Add my account menu item in the future
+  // {
+  //   label: "My Account",
+  //   href: "/admin/my-account",
+  // },
   {
     label: "Users",
     href: "/admin/users",

@@ -20,7 +20,6 @@ export class ImportsController {
   @Post('users')
   @UseInterceptors(FileInterceptor('file'))
   importUsers(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    return [];
+    return this.importsService.importUsers(file);
   }
 }

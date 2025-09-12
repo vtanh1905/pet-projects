@@ -15,7 +15,7 @@ export class UserImportsEntity {
   file_name: string;
 
   @Column()
-  status: string;
+  status: number;
 
   @CreateDateColumn()
   created_at: Date;

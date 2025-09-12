@@ -2,12 +2,12 @@
 
 import { ChangeEvent } from "react";
 import { toast } from "sonner";
+import { useRouter } from 'next/navigation';
 import { DataTable } from "@/components/data-table/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ColumnDef } from "@tanstack/react-table";
-import { callAPI } from "@/lib/utils";
-import { CORE_API_URL } from "@/lib/constants";
+import { importUsers } from "@/lib/core-api";
 
 export type UserImport = {
   id: number;
@@ -32,6 +32,7 @@ export const columns: ColumnDef<UserImport>[] = [
 ];  
 
 export function UserImport({ data }: { data: UserImport[] }) {
+  const router = useRouter();
 
   const handleImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,13 +43,14 @@ export function UserImport({ data }: { data: UserImport[] }) {
       const formData = new FormData();
       formData.append("file", file);
 
-      await callAPI(`${CORE_API_URL}/imports/users`, {
-        method: "POST",
-        body: formData, 
+      await importUsers({
+        body: formData,
       });
 
       event.target.value = '';
       toast.success('Users imported successfully');
+
+      router.refresh();
     } catch (error) {
       console.error('Error importing users: ', error);
 

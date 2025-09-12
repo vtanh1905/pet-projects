@@ -17,7 +17,6 @@ export class CreateUserImportTable1757604031353 implements MigrationInterface {
             name: 'file_name',
             type: 'varchar',
             length: '255',
-            isUnique: true,
           },
           {
             name: 'status',

@@ -1,10 +1,38 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
-import { getUsers } from "@/lib/core-api";
+import { DataTable } from "../../../components/data-table/data-table";
+import { getUsers, getUserImports } from "@/lib/core-api";
+import { UserImport } from "./user-import";
+import { ColumnDef } from "@tanstack/react-table";
+
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  date_of_birth: string;
+};
+
+export const columns: ColumnDef<User>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone",
+  },
+  {
+    accessorKey: "date_of_birth",
+    header: "Date of Birth",
+  },
+];
 
 export default async function Users() {
-  const users = await getUsers({ cache: "no-store" });
+  const [users, userImports] = await Promise.all([getUsers({ cache: "no-store" }), getUserImports({ cache: "no-store" })]);
 
   return (
     <Tabs defaultValue="account" className="w-full">
@@ -19,7 +47,9 @@ export default async function Users() {
           <DataTable columns={columns} data={users} />
         </div>
       </TabsContent>
-      <TabsContent value="import">Import users</TabsContent>
+      <TabsContent value="import">
+        <UserImport data={userImports} />
+      </TabsContent>
     </Tabs>
   );
 }

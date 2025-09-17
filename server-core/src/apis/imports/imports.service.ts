@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { UserImportsRepository } from '../../database/repositories';
-import { DataSource } from 'typeorm';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  UserImportsRepository,
+  UsersRepository,
+} from '../../database/repositories';
+import { DataSource, In } from 'typeorm';
 import { UserImportsEntity, UsersEntity } from '../../database/entities';
 import { readCSVFile } from '../../common/helpers/file.helper';
 import { UserImportStatus } from '../../common/enums';
@@ -9,6 +12,7 @@ import { UserImportStatus } from '../../common/enums';
 export class ImportsService {
   constructor(
     private readonly userImportsRepository: UserImportsRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -18,8 +22,9 @@ export class ImportsService {
 
   async importUsers(file: Express.Multer.File) {
     const usersFromCSV = await readCSVFile<UsersEntity>(file);
+    const emailsFromCSV = usersFromCSV.map((user) => user.email);
 
-    // @TODO: Validate the data from CSV
+    await this._validateEmailsFromCSV(emailsFromCSV);
 
     return await this.dataSource.transaction(async (entityManager) => {
       const users = entityManager.create(UsersEntity, usersFromCSV);
@@ -33,5 +38,27 @@ export class ImportsService {
 
       return 1;
     });
+  }
+
+  async _validateEmailsFromCSV(emails: string[]) {
+    const existingUsers = await this.usersRepository.find({
+      select: {
+        email: true,
+      },
+      where: {
+        email: In(emails),
+      },
+    });
+
+    if (existingUsers.length) {
+      throw new BadRequestException(
+        'Some emails already exist in the system.',
+        {
+          description: `The following emails already exist: ${existingUsers.map((user) => user.email).join(', ')}`,
+        },
+      );
+    }
+
+    return true;
   }
 }

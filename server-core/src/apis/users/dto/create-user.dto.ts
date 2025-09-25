@@ -12,7 +12,7 @@ export default class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsPhoneNumber()
+  @IsPhoneNumber('VN')
   phone: string;
 
   @IsDateString()

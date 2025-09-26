@@ -8,6 +8,14 @@ export interface User {
   date_of_birth: string
 }
 
+export interface InsertUserData {
+  name: string,
+  email: string,
+  phone: string,
+  date_of_birth: string,
+}
+
 export const usersCoreAPI = {
   getAll: () => coreApi.get<User[]>('/users'),
+  insert: (data: InsertUserData) => coreApi.post<boolean>('/users', data),
 }
